@@ -13,7 +13,7 @@ public:
 	~Answer();
 	int  size() const { return m_v.size(); }
 	void random();
-	double rand_0_1();
+	static double rand_0_1();
 	void random( int start, int end );
 	void randomUV( int & u, int & v, int last_u, int last_v );
 	void print( std::ostream & fout = std::cout );
