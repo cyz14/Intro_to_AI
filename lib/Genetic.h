@@ -1,7 +1,8 @@
 #ifndef GENETIC_H
 #define GENETIC_H
 
-#include "../Answer.h"
+#include "./Answer.h"
+#include "./city.h"
 
 extern const int SIZE;
 extern const double pc; // probability of performing crossover
@@ -13,11 +14,11 @@ public:
   ~Genetic();
 
   void workout(std::ostream &);
-  void initPopulation(Answer *, int psize = SIZE);
+  void initPopulation(Answer **, int psize = SIZE);
   double fitvalue(const Answer &);
   int wheelSelection(double * prob, int size = SIZE);
 private:
-  Answer m_ans;
+  Answer * m_ans;
   const int ncity;
   std::vector<City> & m_vc;
 };

@@ -38,8 +38,10 @@ void TourMan::input(std::istream & fin) {
 }
 
 void TourMan::workout(std::ostream & fout) {
-	SimulatedAnnealing sa(vc, ans);
-	sa.workout(fout);
+	// SimulatedAnnealing sa(vc, ans);
+	// sa.workout(fout);
+	Genetic ga(vc, ans);
+	ga.workout(fout);
 }
 
 void TourMan::printPath(std::ostream & fout) {

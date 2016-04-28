@@ -10,9 +10,9 @@
 
 Answer::Answer(int size)
 {
-	if (size == 0) {
-		std::cerr << "Size is 0." << std::endl;
-	}
+	// if (size == 0) {
+	// 	std::cerr << "Size is 0." << std::endl;
+	// }
 	for (int i = 0; i < size; ++i)
 	{
 		m_v.push_back(i);
