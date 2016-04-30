@@ -18,7 +18,7 @@ public:
 	void randomUV( int & u, int & v, int last_u, int last_v );
 	void print( std::ostream & fout = std::cout );
 	void setAt( int pos, int num );
-	int operator [] ( unsigned int pos ) const;
+	int operator [] ( int pos ) const;
 	Answer & operator = ( const Answer & right );
 };
 

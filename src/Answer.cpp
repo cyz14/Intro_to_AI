@@ -10,9 +10,9 @@
 
 Answer::Answer(int size)
 {
-	// if (size == 0) {
-	// 	std::cerr << "Size is 0." << std::endl;
-	// }
+	if (size == 0) {
+		std::cerr << "Size is 0." << std::endl;
+	}
 	for (int i = 0; i < size; ++i)
 	{
 		m_v.push_back(i);
@@ -44,7 +44,27 @@ void Answer::random() {
 }
 
 void Answer::random( int start, int end ) {
+	if (start < end) {
+		int number = end - start;
+		for (size_t i = end; i > start; i--) {
+			int tgt = rand() % number + start;
+			std::swap( m_v[i-1], m_v[tgt]);
+			number--;
+		}
+	} else if (end < start) {
+		std::swap(m_v[start], m_v[end]);
+		return;
+		// int num = size();
+		// for (size_t i = (end - 1 + num) % num, j = start; i != j; ) {
+		// 	std::swap( m_v[i], m_v[j]);
+		// 	if (i == (j + 1) % num)
+		// 		 break;
 
+		// 	i--;
+		// 	i = (i + num) % num;
+		// 	j++;
+		// 	j %= num;
+	}
 }
 
 double Answer::rand_0_1() {
@@ -81,9 +101,9 @@ void Answer::setAt(int pos, int num) {
 	m_v[pos] = num;
 }
 
-int Answer::operator [] (unsigned int pos) const
+int Answer::operator [] (int pos) const
 {
-	assert(pos < size());
+	assert(pos < size() && pos >= 0);
 	return m_v[pos];
 }
 

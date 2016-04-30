@@ -1,6 +1,8 @@
 #include "../lib/TourMan.h"
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
+#include <ctime>
 
 using namespace std;
 
@@ -25,8 +27,10 @@ int main(int argc, char * argv[]) {
     return -1;
   }
 
+  srand((unsigned int)time(NULL));
   man.input(fin);
   man.workout(fout);
+  // man.test();
 
   return 0;
 }

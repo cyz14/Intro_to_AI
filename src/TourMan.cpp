@@ -16,6 +16,8 @@ TourMan::TourMan() : ncity(0) {}
 TourMan::~TourMan() {}
 
 void TourMan::test() {
+	Genetic ga(vc, ans);
+	ga.test();
 }
 
 void TourMan::input(std::istream & fin) {
@@ -40,8 +42,13 @@ void TourMan::input(std::istream & fin) {
 void TourMan::workout(std::ostream & fout) {
 	// SimulatedAnnealing sa(vc, ans);
 	// sa.workout(fout);
+
 	Genetic ga(vc, ans);
+#ifdef _TEST_
+	ga.test();
+#else
 	ga.workout(fout);
+#endif
 }
 
 void TourMan::printPath(std::ostream & fout) {
