@@ -9,7 +9,8 @@
   即可
 
   或者在 src 目录下运行
-    g++ Answer.cpp city.cpp Genetic.cpp SimulatedAnnealing.cpp main.cpp TourMan.cpp -o homework4.exe
+
+    g++ Answer.cpp city.cpp Genetic.cpp SimulatedAnnealing.cpp main.cpp TourMan.cpp -o ../bin/homework4.exe
 
 ### 个体的编码方案
   整数的排列编码
