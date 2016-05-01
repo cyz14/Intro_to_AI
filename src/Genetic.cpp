@@ -75,7 +75,7 @@ void Genetic::workout(std::ostream & fout) {
   initPopulation(colony, SIZE);
 
   int gene_num = 1000 * ncity;
-  while (t < gene_num) {
+  while (t < gene_num) { // 结束条件： 遗传代数到达城市数目的1000倍
 
     bestGeneId = nextGeneration(colony, nextGene);
     bestAnswer = total_cost(*colony[bestGeneId]);
@@ -179,7 +179,7 @@ void Genetic::pair_cross(Answer * fa, Answer * mo) { // 部分映射的交叉法
   }
 }
 
-void Genetic::mutate(Answer * so) {
+void Genetic::mutate(Answer * so) { // 打乱变异
   int u = 0, v = 0;
   so->randomUV(u, v, 0, 0);
   so->random(u ,v);
@@ -249,7 +249,6 @@ double Genetic::total_cost(const Answer & answer) {
 }
 
 double Genetic::fitvalue(const Answer & answer) {
-  const double M = 1;
   double dist = total_cost(answer);
   return 1.0 / dist;
 }
