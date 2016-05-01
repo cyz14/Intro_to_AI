@@ -3,3 +3,4 @@
 src/*.txt
 src/*.dSYM
 src/*.exe
+bin/*.txt
