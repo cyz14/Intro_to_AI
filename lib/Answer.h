@@ -16,8 +16,9 @@ public:
 	static double rand_0_1();
 	void random( int start, int end );
 	void randomUV( int & u, int & v, int last_u, int last_v );
-	void print( std::ostream & fout = std::cout );
+	void print( std::ostream & fout = std::cout);
 	void setAt( int pos, int num );
+	void reverse();
 	int operator [] ( int pos ) const;
 	Answer & operator = ( const Answer & right );
 };

@@ -41,9 +41,9 @@ Making new population only by new offspring can cause lost of the best chromosom
 
 */
 
-extern const int SIZE = 40;
-extern const double pc = 1.0;
-extern const double pm = 0.05;
+extern const int SIZE = 20;     // colony population size
+extern const double pc = 1.0;   // probability of crossover
+extern const double pm = 0.05;  // probability of mutation
 const double INF = 1e32;
 
 Genetic::Genetic(std::vector<City> & vc, Answer * answer)
@@ -55,65 +55,6 @@ Genetic::Genetic(std::vector<City> & vc, Answer * answer)
 }
 
 Genetic::~Genetic() {}
-
-void Genetic::test_crossover_mutate() {
-  Answer ** colony = new Answer*[SIZE];
-  for (size_t i = 0; i < SIZE; i++) {
-    colony[i] = new Answer(ncity);
-  }
-  initPopulation(colony, SIZE);
-  std::cout << std::setprecision(4) << std::endl;
-  for (size_t i = 0; i < SIZE; i++) {
-    std::cout << "##### Mutate" << i << " #####" << std::endl;
-    std::cout << fitvalue(*colony[i]) << ' ';
-    colony[i]->print();
-    mutate(colony[i]);
-    std::cout << fitvalue(*colony[i]) << ' ';
-    colony[i]->print();
-    std::cout << "##### Mutate" << i << " #####" << std::endl;
-  }
-
-  for (size_t i = 0, j = 1; j < SIZE; i+=2, j+=2) {
-    std::cout << "##### Crossover " << i << " #####" << std::endl;
-    std::cout << "##### Before " << " #####" << std::endl;
-    std::cout << fitvalue(*colony[i]) << ' ';
-    colony[i]->print();
-    std::cout << fitvalue(*colony[i]) << ' ';
-    colony[j]->print();
-    crossover(colony[i], colony[j]);
-    std::cout << "##### After " << " #####" << std::endl;
-    std::cout << fitvalue(*colony[i]) << ' ';
-    colony[i]->print();
-    std::cout << fitvalue(*colony[i]) << ' ';
-    colony[j]->print();
-  }
-}
-
-void Genetic::test() {
-  // test_crossover_mutate();
-  Answer ** colony = new Answer*[SIZE];
-  for (int i = 0; i < SIZE; ++i)
-  {
-    colony[i] = new Answer(ncity);
-  }
-  
-  double * fitv = new double[SIZE];
-  double sumFit = 0.0;
-  for (int i = 0; i < SIZE; ++i)
-  {
-    fitv[i] = fitvalue(*colony[i]);
-    sumFit += fitv[i];
-  }
-  double * prob = new double[SIZE];
-  for (int i = 0; i < SIZE; ++i)
-  {
-    prob[i] = fitv[i] / sumFit;
-  }
-  for (int i = 0; i < SIZE; ++i)
-  {
-    std::cout << wheelSelection(prob, SIZE) << std::endl;
-  }
-}
 
 void Genetic::workout(std::ostream & fout) {
   // Answer answer(ncity);
@@ -127,87 +68,32 @@ void Genetic::workout(std::ostream & fout) {
     nextGene[i] = new Answer(ncity);
   }
 
-  double * fit = new double[SIZE];
-  double * prob = new double[SIZE];
-
   int t = 0;
-  double bestAnswer = -INF;
-  double lastBest   = -INF;
-  int bestGenerationNum = 0;
+  double bestAnswer = 0.0;
+  int bestGeneId = -1;
 
   initPopulation(colony, SIZE);
 
   int gene_num = 1000 * ncity;
   while (t < gene_num) {
-    // calculate fit values
-    int bestGeneId = 0;
-    double bestFitVal = 0.0;
-    double sumFit = 0.0;
-    for (size_t i = 0; i < SIZE; ++i) {
-      fit[i] = fitvalue(*colony[i]);
-      sumFit += fit[i];
 
-      if (fit[i] > bestFitVal) {
-        bestFitVal = fit[i];
-        bestGeneId = i;
-      }
-    }
+    bestGeneId = nextGeneration(colony, nextGene);
+    bestAnswer = total_cost(*colony[bestGeneId]);
+    // print(fout, colony[bestGeneId]);
 
-    if (bestAnswer < bestFitVal) {
-        bestAnswer = bestFitVal;
-    }
-
-    for (size_t i = 0; i < SIZE; i++) {
-      prob[i] = fit[i] / sumFit;
-    }
-
-    *nextGene[0] = *colony[bestGeneId]; // best chromosome must be kept
-    for (size_t i = 1; i < SIZE; i++) {
-      int id = wheelSelection(prob, SIZE);
-      // std::cout << id << std::endl;
-      (*nextGene[i]) = (*colony[id]);
-    }
-
-    // (7)
-    for (size_t i = 0, j = 1; j < SIZE; i += 2, j += 2) {
-      double p = Answer::rand_0_1();
-      if (p < pc) {
-        crossover(nextGene[i], nextGene[j]);
-      }
-    }
-    // (8)
-    for (size_t i = 1; i < SIZE; i++) {
-      double p = Answer::rand_0_1();
-      if (p < pm) {
-        mutate(nextGene[i]);
-      }
-    }
     // (9)
-    if (bestAnswer == lastBest) {
-      ++bestGenerationNum;
-      if (bestGenerationNum >= 1000 * ncity) {
-        break;
-      }
-    } else {
-      std::cout << "bestGenerationNum: " << bestGenerationNum << ", Best now: " << 1 / bestAnswer << std::endl;
-      bestGenerationNum = 0;
-    }
-
-    lastBest = bestAnswer;
-
     for (size_t i = 0; i < SIZE; i++) {
       *colony[i] = *nextGene[i];
     }
     t = t + 1;
-    colony[bestGeneId]->print(fout);
-    fout << 1.0 / bestAnswer << std::endl; //  << std::setprecision(4)
   }
   // (10)
-  std::cout << 1 / bestAnswer << std::endl;
+  print(fout, colony[bestGeneId]);
+  std::cout << bestAnswer << std::endl;
 }
 
 void Genetic::crossover(Answer * fa, Answer * mo) {
-  normal_cross(fa, mo);
+  normal_cross(fa, mo); // 常规交叉法
 }
 
 void Genetic::normal_cross(Answer * fa, Answer * mo) { // 常规交叉法
@@ -215,6 +101,12 @@ void Genetic::normal_cross(Answer * fa, Answer * mo) { // 常规交叉法
   // std::cout << "pos: " << pos << std::endl;
   Answer so1(*fa);
   Answer so2(*mo);
+  double rev = Answer::rand_0_1();
+  if (rev < 0.8) {
+    fa->reverse();
+    mo->reverse();
+  }
+
   int * fa_occur = new int[ncity];
   int * mo_occur = new int[ncity];
   for (size_t i = 0; i < ncity; i++) {
@@ -250,8 +142,41 @@ void Genetic::normal_cross(Answer * fa, Answer * mo) { // 常规交叉法
   *mo = so2;
 }
 
+// has bug
 void Genetic::pair_cross(Answer * fa, Answer * mo) { // 部分映射的交叉法
+  int * a = new int[ncity];
+  int * b = new int[ncity];
+  int u = 0, v = 0;
+  fa->randomUV(u, v, 0, 0);
+  if (u > v)
+    std::swap(u, v);
 
+  for (size_t i = 0; i < ncity; i++) {
+    a[i] = b[i] = -1;
+  }
+
+  std::cout << u << ' ' << v << std::endl;
+  for (size_t i = 0; i < ncity; i++) {
+    if (i < u || i > v) {
+      if (a[ (*fa)[i] ] == -1)
+        a[ (*fa)[i] ] = (*fa)[i];
+      if (b[ (*mo)[i] ] == -1)
+        b[ (*mo)[i] ] = (*mo)[i];
+    }
+    else {
+      a[ (*fa)[i] ] = (*mo)[i];
+      a[ (*mo)[i] ] = (*fa)[i];
+      b[ (*mo)[i] ] = (*fa)[i];
+      b[ (*fa)[i] ] = (*mo)[i];
+    }
+  }
+
+  for (size_t i = 0; i < ncity; i++) {
+    int ta = a[ (*fa)[i] ];
+    int tb = b[ (*mo)[i] ];
+    fa->setAt(i, ta);
+    mo->setAt(i, tb);
+  }
 }
 
 void Genetic::mutate(Answer * so) {
@@ -260,13 +185,58 @@ void Genetic::mutate(Answer * so) {
   so->random(u ,v);
 }
 
-
-
 void Genetic::initPopulation(Answer ** colony, int psize) {
   for (size_t i = 0; i < psize; ++i) {
     colony[i]->random();
   }
 }
+
+int Genetic::nextGeneration(Answer ** colony, Answer ** nextGene) {
+  double * fit = new double[SIZE];
+  double sumFit = 0.0;
+  double bestFitVal = 0.0;
+  int bestGeneId = 0;
+
+  // calculate fit values
+  for (size_t i = 0; i < SIZE; ++i) {
+    fit[i] = fitvalue(*colony[i]);
+    sumFit += fit[i];
+
+    if (fit[i] > bestFitVal) {
+      bestFitVal = fit[i];
+      bestGeneId = i;
+    }
+  }
+
+  double * prob = new double[SIZE];
+  for (size_t i = 0; i < SIZE; i++) {
+    prob[i] = fit[i] / sumFit;
+  }
+
+  *nextGene[0] = *colony[bestGeneId]; // best chromosome should be kept
+  for (size_t i = 1; i < SIZE; i++) {
+    int id = wheelSelection(prob, SIZE);
+    // std::cout << id << std::endl;
+    (*nextGene[i]) = (*colony[id]);
+  }
+
+  // (7) Crossover
+  for (size_t i = 1, j = 2; j < SIZE; i += 2, j += 2) {
+    double p = Answer::rand_0_1();
+    if (p < pc) {
+      crossover(nextGene[i], nextGene[j]);
+    }
+  }
+  // (8) Mutate
+  for (size_t i = 1; i < SIZE; i++) {
+    double p = Answer::rand_0_1();
+    if (p < pm) {
+      mutate(nextGene[i]);
+    }
+  }
+  return bestGeneId;
+}
+
 
 double Genetic::total_cost(const Answer & answer) {
   double dist = 0.0;
@@ -295,4 +265,99 @@ int Genetic::wheelSelection(double * prob, int size) {
     s += prob[i];
   }
   return 0;
+}
+
+void Genetic::print(std::ostream & fout, Answer * answer) {
+  for (size_t i = 0; i < ncity; i++) {
+    fout << m_vc[(*answer)[i]].getName() << ' ';
+    if (i + 1 == ncity) {
+      fout << std::setprecision(5) << total_cost(*answer) << std::endl;
+    }
+  }
+}
+
+void Genetic::test_crossover() {
+  Answer ** colony = new Answer*[SIZE];
+  for (size_t i = 0; i < SIZE; i++) {
+    colony[i] = new Answer(ncity);
+  }
+  initPopulation(colony, SIZE);
+
+  for (size_t i = 0, j = 1; j < SIZE; i+=2, j+=2) {
+    std::cout << "##### Crossover " << i << " #####" << std::endl;
+    std::cout << "##### Before " << " #####" << std::endl;
+    std::cout << fitvalue(*colony[i]) << ' ';
+    colony[i]->print();
+    std::cout << fitvalue(*colony[i]) << ' ';
+    colony[j]->print();
+
+    crossover(colony[i], colony[j]);
+
+    std::cout << "##### After " << " #####" << std::endl;
+    std::cout << fitvalue(*colony[i]) << ' ';
+    colony[i]->print();
+    std::cout << fitvalue(*colony[i]) << ' ';
+    colony[j]->print();
+  }
+
+  for (size_t i = 0; i < SIZE; i++) {
+    delete colony[i];
+  }
+  delete [] colony;
+}
+
+void Genetic::test_mutate() {
+  Answer ** colony = new Answer*[SIZE];
+  for (size_t i = 0; i < SIZE; i++) {
+    colony[i] = new Answer(ncity);
+  }
+  initPopulation(colony, SIZE);
+  std::cout << std::setprecision(4) << std::endl;
+  for (size_t i = 0; i < SIZE; i++) {
+    std::cout << "##### Mutate" << i << " #####" << std::endl;
+    std::cout << fitvalue(*colony[i]) << ' ';
+    colony[i]->print();
+
+    mutate(colony[i]);
+
+    std::cout << fitvalue(*colony[i]) << ' ';
+    colony[i]->print();
+    std::cout << "##### Mutate" << i << " #####" << std::endl;
+  }
+  for (size_t i = 0; i < SIZE; i++) {
+    delete colony[i];
+  }
+  delete [] colony;
+}
+
+void Genetic::test() {
+  test_crossover();
+  // test_mutate();
+  Answer ** colony = new Answer*[SIZE];
+  for (int i = 0; i < SIZE; ++i)
+  {
+    colony[i] = new Answer(ncity);
+  }
+
+  double * fitv = new double[SIZE];
+  double sumFit = 0.0;
+  for (int i = 0; i < SIZE; ++i)
+  {
+    fitv[i] = fitvalue(*colony[i]);
+    sumFit += fitv[i];
+  }
+  double * prob = new double[SIZE];
+  for (int i = 0; i < SIZE; ++i)
+  {
+    prob[i] = fitv[i] / sumFit;
+  }
+  for (int i = 0; i < SIZE; ++i)
+  {
+    std::cout << wheelSelection(prob, SIZE) << std::endl;
+  }
+
+  for (size_t i = 0; i < SIZE; i++) {
+    delete colony[i];
+  }
+  delete [] colony;
 }

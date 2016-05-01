@@ -89,8 +89,9 @@ void Answer::print(std::ostream & fout) {
 	for (int i = 0; i < N; ++i)
 	{
 		fout << m_v[i];
-		if (i == N - 1)
+		if (i == N - 1) {
 			fout << std::endl;
+		}
 		else
 			fout << ' ';
 	}
@@ -114,4 +115,10 @@ Answer & Answer::operator = (const Answer & right) {
 		m_v[i] = right[i];
 	}
 	return *this;
+}
+
+void Answer::reverse() {
+	for (size_t i = 0, j = size() - 1; i < j; i++, j--) {
+		std::swap(m_v[i], m_v[j]);
+	}
 }
