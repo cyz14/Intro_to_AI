@@ -54,16 +54,6 @@ void Answer::random( int start, int end ) {
 	} else if (end < start) {
 		std::swap(m_v[start], m_v[end]);
 		return;
-		// int num = size();
-		// for (size_t i = (end - 1 + num) % num, j = start; i != j; ) {
-		// 	std::swap( m_v[i], m_v[j]);
-		// 	if (i == (j + 1) % num)
-		// 		 break;
-
-		// 	i--;
-		// 	i = (i + num) % num;
-		// 	j++;
-		// 	j %= num;
 	}
 }
 
