@@ -3,6 +3,17 @@
 ## 说明( Statements )
 
 ### 编译( Compile )
+#### 编程语言：C/C++
+#### 编译环境：g++
+#### 头文件( Head files )
+|---lib(子目录)
+  * Answer.h
+  * city.h
+  * Genetic.h
+  * SimulatedAnnealing.h
+  * TourMan.h
+
+
   在 src 目录下运行
 
     make Genetic
