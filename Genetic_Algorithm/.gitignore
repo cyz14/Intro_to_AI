@@ -1,0 +1,6 @@
+# Genetic Algorithm for TSP .gitignore
+
+src/*.txt
+src/*.dSYM
+src/*.exe
+bin/*.txt
